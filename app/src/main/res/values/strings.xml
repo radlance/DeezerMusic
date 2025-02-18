@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">DeezerMusic</string>
+    <string name="tracks">tracks</string>
+    <string name="downloaded">downloaded</string>
 </resources>

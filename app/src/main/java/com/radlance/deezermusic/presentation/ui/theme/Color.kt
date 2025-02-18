@@ -1,4 +1,4 @@
-package com.radlance.deezermusic.ui.theme
+package com.radlance.deezermusic.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
