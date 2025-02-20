@@ -1,5 +1,6 @@
 package com.radlance.deezermusic.presentation.track
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,6 +17,7 @@ import com.radlance.deezermusic.presentation.ui.theme.DeezerMusicTheme
 @Composable
 fun TrackList(
     trackList: List<Track>,
+    onTrackClick: (Track) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -24,7 +26,7 @@ fun TrackList(
         contentPadding = PaddingValues(start = 6.dp)
     ) {
         items(items = trackList, key = { track -> track.id }) { track ->
-            TrackCard(track = track)
+            TrackCard(track = track, modifier = Modifier.clickable { onTrackClick(track) })
         }
     }
 }
@@ -78,7 +80,8 @@ private fun TrackListPreview() {
                     ),
                     type = "track"
                 )
-            }
+            },
+            onTrackClick = {}
         )
     }
 }

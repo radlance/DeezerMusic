@@ -1,10 +1,13 @@
 package com.radlance.deezermusic.app.di
 
 import android.content.Context
+import androidx.media3.exoplayer.ExoPlayer
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.radlance.deezermusic.common.BaseResourceProvider
 import com.radlance.deezermusic.common.ResourceProvider
 import com.radlance.deezermusic.data.api.DeezerService
+import com.radlance.deezermusic.data.player.PlayerRepositoryImpl
+import com.radlance.deezermusic.domain.player.PlayerRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -52,5 +55,17 @@ class CommonModule {
     @Singleton
     fun provideResourceProvider(@ApplicationContext context: Context): ResourceProvider {
         return BaseResourceProvider(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideExoPlayer(@ApplicationContext context: Context): ExoPlayer {
+        return ExoPlayer.Builder(context).build()
+    }
+
+    @Provides
+    @Singleton
+    fun providePlayerRepository(exoPlayer: ExoPlayer): PlayerRepository {
+        return PlayerRepositoryImpl(exoPlayer)
     }
 }

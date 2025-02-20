@@ -47,6 +47,7 @@ kapt {
 }
 
 dependencies {
+    implementation(libs.media3.exoplayer)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.http)
 
