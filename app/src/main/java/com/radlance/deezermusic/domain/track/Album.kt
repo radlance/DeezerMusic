@@ -1,7 +1,7 @@
 package com.radlance.deezermusic.domain.track
 
 data class Album(
-    val id: Int,
+    val id: Long,
     val title: String,
     val cover: String,
     val coverSmall: String,

@@ -1,7 +1,7 @@
 package com.radlance.deezermusic.domain.track
 
 data class Artist(
-    val id: Int,
+    val id: Long,
     val name: String,
     val link: String,
     val picture: String,

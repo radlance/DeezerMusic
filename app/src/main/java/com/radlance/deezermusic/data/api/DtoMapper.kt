@@ -11,12 +11,15 @@ abstract class DtoMapper {
     protected fun TrackDto.toTrack(): Track {
         return Track(
             id = id,
+            readable = readable,
             title = title,
             titleShort = titleShort,
+            titleVersion = titleVersion,
             link = link,
             duration = duration,
             rank = rank,
             explicitLyrics = explicitLyrics,
+            explicitContentLyrics = explicitContentLyrics,
             explicitContentType = explicitContentType,
             explicitContentCover = explicitContentCover,
             preview = preview,

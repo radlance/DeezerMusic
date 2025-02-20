@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.radlance.deezermusic.presentation.apitracks.ApiTracksScreen
 
 @Composable
 fun NavGraph(
@@ -16,7 +17,7 @@ fun NavGraph(
         modifier = modifier
     ) {
         composable<ApiTracks> {
-
+            ApiTracksScreen()
         }
 
         composable<DownloadedTracks> {

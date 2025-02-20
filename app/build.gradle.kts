@@ -23,7 +23,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -47,6 +47,14 @@ kapt {
 }
 
 dependencies {
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.http)
+
+    implementation(libs.retrofit)
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
+    implementation(libs.retrofit2.kotlinx.serialization.converter)
+
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.material.icons.extended)
 

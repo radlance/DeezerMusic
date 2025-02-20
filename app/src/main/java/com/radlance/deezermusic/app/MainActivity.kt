@@ -13,7 +13,9 @@ import com.radlance.deezermusic.app.navigation.BottomNavigationBar
 import com.radlance.deezermusic.app.navigation.NavGraph
 import com.radlance.deezermusic.app.navigation.rememberNavigationState
 import com.radlance.deezermusic.presentation.ui.theme.DeezerMusicTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
