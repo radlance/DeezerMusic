@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -19,8 +18,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
 import com.radlance.deezermusic.R
 import com.radlance.deezermusic.domain.track.Album
 import com.radlance.deezermusic.domain.track.Artist
@@ -34,10 +31,7 @@ fun TrackCard(
 ) {
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .crossfade(enable = true)
-                .data(track.album.cover)
-                .build(),
+            model = track.album.cover,
             contentDescription = stringResource(R.string.track_cover),
             contentScale = ContentScale.Crop,
             modifier = Modifier.size(52.dp)
