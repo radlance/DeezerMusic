@@ -1,11 +1,10 @@
 package com.radlance.deezermusic.presentation.apitracks
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.radlance.deezermusic.domain.apitracks.ApiTracksRepository
 import com.radlance.deezermusic.domain.apitracks.ApiTracksResult
 import com.radlance.deezermusic.domain.player.PlayerRepository
-import com.radlance.deezermusic.domain.track.Track
+import com.radlance.deezermusic.presentation.track.TrackViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,10 +16,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ApiTracksViewModel @Inject constructor(
-    private val playerRepository: PlayerRepository,
     private val apiTracksRepository: ApiTracksRepository,
-    private val mapper: ApiTracksResult.Mapper<ApiTracksResultUiState>
-) : ViewModel() {
+    private val mapper: ApiTracksResult.Mapper<ApiTracksResultUiState>,
+    playerRepository: PlayerRepository
+) : TrackViewModel(playerRepository) {
     private val _loadChartResultUiState =
         MutableStateFlow<ApiTracksResultUiState>(ApiTracksResultUiState.Initial)
     val loadChartResultUiState: StateFlow<ApiTracksResultUiState> =
@@ -39,11 +38,4 @@ class ApiTracksViewModel @Inject constructor(
             _loadChartResultUiState.value = result.map(mapper)
         }
     }
-
-    fun playTrack(track: Track) {
-        playerRepository.play(track.preview)
-    }
-
-    fun pause() = playerRepository.pause()
-    fun stop() = playerRepository.stop()
 }
