@@ -8,5 +8,6 @@
     <string name="no_connection">no connection</string>
     <string name="play_pause_track">play/pause track</string>
     <string name="search">Search</string>
-    <string name="clear_search">clear_search</string>
+    <string name="clear_search">clear search</string>
+    <string name="nothing_found">nothing found</string>
 </resources>
