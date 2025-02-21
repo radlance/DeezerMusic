@@ -33,11 +33,11 @@ fun TrackList(
         items(items = trackList, key = { track -> track.id }) { track ->
             TrackCard(
                 track = track,
-                isFocused = trackState.currentTrack == track,
+                isFocused = trackState.currentTrack?.id == track.id,
                 isPlaying = trackState.isPlaying,
                 modifier = Modifier.clickable {
                     when {
-                        trackState.currentTrack != track -> trackViewModel.playTrack(track)
+                        trackState.currentTrack?.id != track.id -> trackViewModel.playTrack(track)
                         trackState.isPlaying -> trackViewModel.pauseTrack()
                         else -> trackViewModel.resumeTrack()
                     }
