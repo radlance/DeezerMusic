@@ -27,6 +27,16 @@ fun TrackList(
     trackViewModel: TrackViewModel = hiltViewModel()
 ) {
     val trackState by trackViewModel.trackState.collectAsState()
+    val isTrackFinished by trackViewModel.isFinished.collectAsState()
+
+    if (isTrackFinished && trackState.isPlaying) {
+        val currentTrackIndex = trackList.indexOfFirst { it.id == trackState.currentTrack?.id }
+        if (currentTrackIndex in 0 until trackList.lastIndex) {
+            trackViewModel.playTrack(trackList[currentTrackIndex + 1])
+        } else {
+            trackViewModel.stopTrack()
+        }
+    }
 
     if (trackList.isNotEmpty()) {
         LazyColumn(
