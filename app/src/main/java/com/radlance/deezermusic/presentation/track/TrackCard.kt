@@ -75,7 +75,8 @@ fun TrackCard(
 
                         Icon(
                             imageVector = icon,
-                            contentDescription = stringResource(R.string.play_pause_track)
+                            contentDescription = stringResource(R.string.play_pause_track),
+                            tint = Color.White
                         )
                     }
                 }

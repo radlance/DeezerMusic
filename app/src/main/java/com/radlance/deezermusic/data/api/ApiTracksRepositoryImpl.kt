@@ -25,7 +25,7 @@ class ApiTracksRepositoryImpl @Inject constructor(
     override suspend fun loadTracksByQuery(query: String): ApiTracksResult {
         return try {
             val foundedTracks = service.loadTracksByQuery(query)
-            ApiTracksResult.Success(foundedTracks.content.tracks.map { trackDto -> trackDto.toTrack() })
+            ApiTracksResult.Success(foundedTracks.tracks.map { trackDto -> trackDto.toTrack() })
         } catch (e: UnknownHostException) {
             ApiTracksResult.Error(resourceProvider.getString(R.string.no_connection))
         } catch (e: Exception) {

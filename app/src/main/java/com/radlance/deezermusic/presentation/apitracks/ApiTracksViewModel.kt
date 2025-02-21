@@ -18,10 +18,10 @@ class ApiTracksViewModel @Inject constructor(
     private val apiTracksRepository: ApiTracksRepository,
     private val mapper: ApiTracksResult.Mapper<ApiTracksResultUiState>,
 ) : ViewModel() {
-    private val _loadChartResultUiState =
+    private val _loadTracksResultUiState =
         MutableStateFlow<ApiTracksResultUiState>(ApiTracksResultUiState.Initial)
-    val loadChartResultUiState: StateFlow<ApiTracksResultUiState> =
-        _loadChartResultUiState.onStart {
+    val loadTracksResultUiState: StateFlow<ApiTracksResultUiState> =
+        _loadTracksResultUiState.onStart {
             loadChart()
         }.stateIn(
             scope = viewModelScope,
@@ -31,9 +31,17 @@ class ApiTracksViewModel @Inject constructor(
 
     fun loadChart() {
         viewModelScope.launch {
-            _loadChartResultUiState.value = ApiTracksResultUiState.Loading
+            _loadTracksResultUiState.value = ApiTracksResultUiState.Loading
             val result = apiTracksRepository.loadChart()
-            _loadChartResultUiState.value = result.map(mapper)
+            _loadTracksResultUiState.value = result.map(mapper)
+        }
+    }
+
+    fun searchTracksByQuery(query: String) {
+        viewModelScope.launch {
+            _loadTracksResultUiState.value = ApiTracksResultUiState.Loading
+            val result = apiTracksRepository.loadTracksByQuery(query)
+            _loadTracksResultUiState.value = result.map(mapper)
         }
     }
 }
