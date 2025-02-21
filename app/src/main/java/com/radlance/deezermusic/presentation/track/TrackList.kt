@@ -22,8 +22,8 @@ fun TrackList(
 ) {
     LazyColumn(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(6.dp),
-        contentPadding = PaddingValues(start = 6.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(start = 8.dp)
     ) {
         items(items = trackList, key = { track -> track.id }) { track ->
             TrackCard(track = track, modifier = Modifier.clickable { onTrackClick(track) })
