@@ -10,6 +10,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,9 +46,21 @@ fun TrackList(
 
     if (trackList.isNotEmpty()) {
         LazyColumn(
-            modifier = modifier,
+            modifier = modifier
+                .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+                .drawWithContent {
+                    drawContent()
+                    drawRect(
+                        brush = Brush.verticalGradient(
+                            0f to Color.Transparent,
+                            0.01f to Color.Red,
+                            0.99f to Color.Red,
+                            1f to Color.Transparent
+                        ), blendMode = BlendMode.DstIn
+                    )
+                },
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 8.dp)
+            contentPadding = PaddingValues(8.dp)
         ) {
             items(items = trackList, key = { track -> track.id }) { track ->
                 TrackCard(
