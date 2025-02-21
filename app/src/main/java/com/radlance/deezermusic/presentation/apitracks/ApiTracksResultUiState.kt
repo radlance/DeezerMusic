@@ -19,17 +19,13 @@ import com.radlance.deezermusic.presentation.track.TrackList
 
 interface ApiTracksResultUiState {
     @Composable
-    fun Show(
-        onTrackClick: (Track) -> Unit,
-        onRetryClick: () -> Unit
-    )
+    fun Show(onRetryClick: () -> Unit)
 
     data class Success(private val tracks: List<Track>) : ApiTracksResultUiState {
         @Composable
-        override fun Show(onTrackClick: (Track) -> Unit, onRetryClick: () -> Unit) {
+        override fun Show(onRetryClick: () -> Unit) {
             TrackList(
                 trackList = tracks,
-                onTrackClick = onTrackClick,
                 modifier = Modifier.fillMaxSize()
             )
         }
@@ -37,7 +33,7 @@ interface ApiTracksResultUiState {
 
     data class Error(private val message: String) : ApiTracksResultUiState {
         @Composable
-        override fun Show(onTrackClick: (Track) -> Unit, onRetryClick: () -> Unit) {
+        override fun Show(onRetryClick: () -> Unit) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -52,14 +48,14 @@ interface ApiTracksResultUiState {
 
     object Loading : ApiTracksResultUiState {
         @Composable
-        override fun Show(onTrackClick: (Track) -> Unit, onRetryClick: () -> Unit) {
+        override fun Show(onRetryClick: () -> Unit) {
             CircularProgressIndicator()
         }
     }
 
     object Initial : ApiTracksResultUiState {
         @Composable
-        override fun Show(onTrackClick: (Track) -> Unit, onRetryClick: () -> Unit) {
+        override fun Show(onRetryClick: () -> Unit) {
         }
     }
 }

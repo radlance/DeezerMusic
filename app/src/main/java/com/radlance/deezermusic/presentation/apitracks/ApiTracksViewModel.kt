@@ -1,10 +1,9 @@
 package com.radlance.deezermusic.presentation.apitracks
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.radlance.deezermusic.domain.apitracks.ApiTracksRepository
 import com.radlance.deezermusic.domain.apitracks.ApiTracksResult
-import com.radlance.deezermusic.domain.player.PlayerRepository
-import com.radlance.deezermusic.presentation.track.TrackViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,8 +17,7 @@ import javax.inject.Inject
 class ApiTracksViewModel @Inject constructor(
     private val apiTracksRepository: ApiTracksRepository,
     private val mapper: ApiTracksResult.Mapper<ApiTracksResultUiState>,
-    playerRepository: PlayerRepository
-) : TrackViewModel(playerRepository) {
+) : ViewModel() {
     private val _loadChartResultUiState =
         MutableStateFlow<ApiTracksResultUiState>(ApiTracksResultUiState.Initial)
     val loadChartResultUiState: StateFlow<ApiTracksResultUiState> =

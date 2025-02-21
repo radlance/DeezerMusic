@@ -6,9 +6,12 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.radlance.deezermusic.domain.track.Album
 import com.radlance.deezermusic.domain.track.Artist
 import com.radlance.deezermusic.domain.track.Track
@@ -17,16 +20,29 @@ import com.radlance.deezermusic.presentation.ui.theme.DeezerMusicTheme
 @Composable
 fun TrackList(
     trackList: List<Track>,
-    onTrackClick: (Track) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    trackViewModel: TrackViewModel = hiltViewModel()
 ) {
+    val trackState by trackViewModel.trackState.collectAsState()
+
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(start = 8.dp)
     ) {
         items(items = trackList, key = { track -> track.id }) { track ->
-            TrackCard(track = track, modifier = Modifier.clickable { onTrackClick(track) })
+            TrackCard(
+                track = track,
+                isFocused = trackState.currentTrack == track,
+                isPlaying = trackState.isPlaying,
+                modifier = Modifier.clickable {
+                    when {
+                        trackState.currentTrack != track -> trackViewModel.playTrack(track)
+                        trackState.isPlaying -> trackViewModel.pauseTrack()
+                        else -> trackViewModel.resumeTrack()
+                    }
+                }
+            )
         }
     }
 }
@@ -80,8 +96,7 @@ private fun TrackListPreview() {
                     ),
                     type = "track"
                 )
-            },
-            onTrackClick = {}
+            }
         )
     }
 }

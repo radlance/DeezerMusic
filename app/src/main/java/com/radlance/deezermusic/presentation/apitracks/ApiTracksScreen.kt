@@ -19,9 +19,6 @@ fun ApiTracksScreen(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        loadChartResultUiState.Show(
-            onRetryClick = viewModel::loadChart,
-            onTrackClick = { track -> viewModel.playTrack(track) }
-        )
+        loadChartResultUiState.Show(onRetryClick = viewModel::loadChart)
     }
 }

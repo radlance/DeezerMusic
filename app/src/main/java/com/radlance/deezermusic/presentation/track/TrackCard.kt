@@ -1,17 +1,27 @@
 package com.radlance.deezermusic.presentation.track
 
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -29,17 +39,49 @@ import com.radlance.deezermusic.presentation.ui.theme.DeezerMusicTheme
 @Composable
 fun TrackCard(
     track: Track,
+    isFocused: Boolean,
+    isPlaying: Boolean,
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        AsyncImage(
-            model = track.album.cover,
-            contentDescription = stringResource(R.string.track_cover),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(52.dp)
-                .clip(RoundedCornerShape(6.dp))
-        )
+        Box(modifier = Modifier.size(52.dp), contentAlignment = Alignment.Center) {
+            AsyncImage(
+                model = track.album.cover,
+                contentDescription = stringResource(R.string.track_cover),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(6.dp))
+            )
+
+            androidx.compose.animation.AnimatedVisibility(
+                visible = isFocused,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                if (isFocused) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(Color.Black.copy(alpha = 0.3f))
+                    ) {
+                        val icon = if (isPlaying) {
+                            Icons.Default.Pause
+                        } else {
+                            Icons.Default.PlayArrow
+                        }
+
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = stringResource(R.string.play_pause_track)
+                        )
+                    }
+                }
+            }
+
+        }
 
         Spacer(Modifier.width(8.dp))
         Column {
@@ -102,7 +144,9 @@ private fun TrackCardPreview() {
                     type = "album"
                 ),
                 type = "track"
-            )
+            ),
+            isFocused = true,
+            isPlaying = true
         )
     }
 }

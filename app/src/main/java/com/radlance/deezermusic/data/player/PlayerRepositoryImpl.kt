@@ -9,14 +9,15 @@ import javax.inject.Inject
 class PlayerRepositoryImpl @Inject constructor(
     private val exoPlayer: ExoPlayer
 ) : PlayerRepository {
-    override fun prepare(url: String) {
+    override fun play(url: String) {
         exoPlayer.apply {
             setMediaItem(MediaItem.fromUri(Uri.parse(url)))
             prepare()
+            play()
         }
     }
 
-    override fun play(url: String) = exoPlayer.play()
+    override fun resume() = exoPlayer.play()
     override fun pause() = exoPlayer.pause()
     override fun stop() = exoPlayer.stop()
     override fun release() = exoPlayer.release()

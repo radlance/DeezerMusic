@@ -6,4 +6,5 @@
     <string name="track_cover">track cover</string>
     <string name="try_again">try again</string>
     <string name="no_connection">no connection</string>
+    <string name="play_pause_track">play/pause track</string>
 </resources>
