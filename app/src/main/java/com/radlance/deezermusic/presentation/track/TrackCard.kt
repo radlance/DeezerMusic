@@ -20,11 +20,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -84,16 +84,15 @@ fun TrackCard(
 
         }
 
-        Spacer(Modifier.width(8.dp))
+        Spacer(Modifier.width(12.dp))
         Column {
             Text(
                 text = track.title,
-                fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1
             )
-            Text(text = track.artist.name, fontSize = 12.sp)
+            Text(text = track.artist.name, fontSize = 12.sp, modifier = Modifier.alpha(0.5f))
         }
     }
 }
@@ -146,7 +145,7 @@ private fun TrackCardPreview() {
                 ),
                 type = "track"
             ),
-            isFocused = true,
+            isFocused = false,
             isPlaying = true
         )
     }

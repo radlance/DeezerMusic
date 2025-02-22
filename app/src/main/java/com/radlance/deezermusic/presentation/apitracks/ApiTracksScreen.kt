@@ -66,11 +66,11 @@ fun ApiTracksScreen(
         }
     }
 
-    Column(Modifier.fillMaxSize()) {
+    Column {
         SearchBar(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp)
+                .padding(horizontal = 12.dp)
                 .focusRequester(focusRequester),
             inputField = {
                 SearchBarDefaults.InputField(
