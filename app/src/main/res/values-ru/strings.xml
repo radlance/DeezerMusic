@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">DeezerMusic</string>
+    <string name="tracks">треки</string>
+    <string name="downloaded">загружено</string>
+    <string name="unknown_error">неизвестная ошибка</string>
+    <string name="track_cover">обложка трека</string>
+    <string name="try_again">попробуйте снова</string>
+    <string name="no_connection">нет подключения</string>
+    <string name="play_pause_track">воспроизведение/пауза трека</string>
+    <string name="search">поиск</string>
+    <string name="clear_search">очистить поиск</string>
+    <string name="nothing_found">ничего не найдено</string>
+    <string name="charts">чарты</string>
+    <string name="search_results">результаты поиска</string>
+</resources>
