@@ -1,15 +1,15 @@
 <resources>
     <string name="app_name">DeezerMusic</string>
-    <string name="tracks">tracks</string>
-    <string name="downloaded">downloaded</string>
-    <string name="unknown_error">unknown error</string>
-    <string name="track_cover">track cover</string>
-    <string name="try_again">try again</string>
-    <string name="no_connection">no connection</string>
-    <string name="play_pause_track">play/pause track</string>
+    <string name="tracks">Tracks</string>
+    <string name="downloaded">Downloaded</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="track_cover">Track cover</string>
+    <string name="try_again">Try again</string>
+    <string name="no_connection">No connection</string>
+    <string name="play_pause_track">Play/Pause track</string>
     <string name="search">Search</string>
-    <string name="clear_search">clear search</string>
-    <string name="nothing_found">nothing found</string>
-    <string name="charts">charts</string>
-    <string name="search_results">search results</string>
+    <string name="clear_search">Clear search</string>
+    <string name="nothing_found">Nothing found</string>
+    <string name="charts">Charts</string>
+    <string name="search_results">Search results</string>
 </resources>
