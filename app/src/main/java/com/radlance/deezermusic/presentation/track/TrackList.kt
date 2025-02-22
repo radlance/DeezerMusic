@@ -79,8 +79,8 @@ fun TrackList(
             Text(
                 text = label,
                 fontSize = textSize.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(horizontal = 8.dp)
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.padding(horizontal = 12.dp)
             )
             LazyColumn(
                 state = scrollState,
@@ -97,8 +97,8 @@ fun TrackList(
                             ), blendMode = BlendMode.DstIn
                         )
                     },
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(8.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(12.dp)
             ) {
                 items(items = trackList, key = { track -> track.id }) { track ->
                     TrackCard(
