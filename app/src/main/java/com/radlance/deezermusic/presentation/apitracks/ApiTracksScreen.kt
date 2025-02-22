@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -42,20 +43,24 @@ fun ApiTracksScreen(
     modifier: Modifier = Modifier,
     viewModel: ApiTracksViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     val loadChartResultUiState by viewModel.loadTracksResultUiState.collectAsState()
     var searchQuery by rememberSaveable { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     var debouncedQuery by rememberSaveable { mutableStateOf("") }
+    var label by rememberSaveable { mutableStateOf(context.getString(R.string.charts)) }
 
     LaunchedEffect(searchQuery) {
         delay(timeMillis = 500)
         if (searchQuery != debouncedQuery) {
             debouncedQuery = searchQuery
             if (searchQuery.isBlank()) {
+                label = context.getString(R.string.charts)
                 viewModel.loadChart()
             } else {
+                label = context.getString(R.string.search_results)
                 viewModel.searchTracksByQuery(query = searchQuery.trim())
             }
         }
@@ -109,12 +114,13 @@ fun ApiTracksScreen(
             onExpandedChange = {},
         ) {}
 
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(16.dp))
         Box(
             modifier = modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             loadChartResultUiState.Show(
+                label = label,
                 onRetryClick = {
                     if (searchQuery.isBlank()) {
                         viewModel.loadChart()

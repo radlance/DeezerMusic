@@ -10,4 +10,6 @@
     <string name="search">Search</string>
     <string name="clear_search">clear search</string>
     <string name="nothing_found">nothing found</string>
+    <string name="charts">charts</string>
+    <string name="search_results">search results</string>
 </resources>

@@ -1,14 +1,21 @@
 package com.radlance.deezermusic.presentation.track
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlendMode
@@ -17,8 +24,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.radlance.deezermusic.R
 import com.radlance.deezermusic.domain.track.Album
@@ -29,9 +38,27 @@ import com.radlance.deezermusic.presentation.ui.theme.DeezerMusicTheme
 @Composable
 fun TrackList(
     trackList: List<Track>,
+    label: String,
     modifier: Modifier = Modifier,
     trackViewModel: TrackViewModel = hiltViewModel()
 ) {
+    val scrollState = rememberLazyListState()
+    val firstVisibleItemIndex by remember {
+        derivedStateOf { scrollState.firstVisibleItemIndex }
+    }
+
+    val firstVisibleItemScrollOffset by remember {
+        derivedStateOf { scrollState.firstVisibleItemScrollOffset }
+    }
+
+    val textSize by animateFloatAsState(
+        targetValue = if (firstVisibleItemIndex == 0 && firstVisibleItemScrollOffset == 0) {
+            24f
+        } else {
+            16f
+        }
+    )
+
     val trackState by trackViewModel.trackState.collectAsState()
     val isTrackFinished by trackViewModel.isFinished.collectAsState()
 
@@ -44,41 +71,56 @@ fun TrackList(
         }
     }
 
-    if (trackList.isNotEmpty()) {
-        LazyColumn(
-            modifier = modifier
-                .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-                .drawWithContent {
-                    drawContent()
-                    drawRect(
-                        brush = Brush.verticalGradient(
-                            0f to Color.Transparent,
-                            0.01f to Color.Red,
-                            0.99f to Color.Red,
-                            1f to Color.Transparent
-                        ), blendMode = BlendMode.DstIn
-                    )
-                },
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(8.dp)
-        ) {
-            items(items = trackList, key = { track -> track.id }) { track ->
-                TrackCard(
-                    track = track,
-                    isFocused = trackState.currentTrack?.id == track.id,
-                    isPlaying = trackState.isPlaying,
-                    modifier = Modifier.clickable {
-                        when {
-                            trackState.currentTrack?.id != track.id -> trackViewModel.playTrack(track)
-                            trackState.isPlaying -> trackViewModel.pauseTrack()
-                            else -> trackViewModel.resumeTrack()
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center
+    ) {
+        if (trackList.isNotEmpty()) {
+            Text(
+                text = label,
+                fontSize = textSize.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+            LazyColumn(
+                state = scrollState,
+                modifier = modifier
+                    .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+                    .drawWithContent {
+                        drawContent()
+                        drawRect(
+                            brush = Brush.verticalGradient(
+                                0f to Color.Transparent,
+                                0.01f to Color.Red,
+                                0.99f to Color.Red,
+                                1f to Color.Transparent
+                            ), blendMode = BlendMode.DstIn
+                        )
+                    },
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(8.dp)
+            ) {
+                items(items = trackList, key = { track -> track.id }) { track ->
+                    TrackCard(
+                        track = track,
+                        isFocused = trackState.currentTrack?.id == track.id,
+                        isPlaying = trackState.isPlaying,
+                        modifier = Modifier.clickable {
+                            when {
+                                trackState.currentTrack?.id != track.id -> trackViewModel.playTrack(
+                                    track
+                                )
+
+                                trackState.isPlaying -> trackViewModel.pauseTrack()
+                                else -> trackViewModel.resumeTrack()
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
+        } else {
+            Text(text = stringResource(R.string.nothing_found))
         }
-    } else {
-        Text(text = stringResource(R.string.nothing_found))
     }
 }
 
@@ -131,7 +173,8 @@ private fun TrackListPreview() {
                     ),
                     type = "track"
                 )
-            }
+            },
+            label = stringResource(R.string.charts)
         )
     }
 }
