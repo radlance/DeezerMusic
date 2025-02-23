@@ -2,7 +2,6 @@ package com.radlance.deezermusic.presentation.track
 
 import android.content.ComponentName
 import android.net.Uri
-import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,7 +33,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
@@ -49,8 +47,7 @@ import com.radlance.deezermusic.presentation.ui.theme.DeezerMusicTheme
 fun TrackList(
     trackList: List<Track>,
     label: String,
-    modifier: Modifier = Modifier,
-    trackViewModel: TrackViewModel = hiltViewModel()
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val sessionToken = SessionToken(context, ComponentName(context, PlaybackService::class.java))
@@ -58,6 +55,20 @@ fun TrackList(
     var isPlayingState by remember { mutableStateOf(false) }
 
     var currentMediaItemState by remember { mutableStateOf<MediaItem?>(null) }
+
+    val mediaItems = trackList.map { track ->
+        MediaItem.Builder()
+            .setMediaId(track.id.toString())
+            .setUri(Uri.parse(track.preview))
+            .setMediaMetadata(
+                MediaMetadata.Builder()
+                    .setArtist(track.artist.name)
+                    .setTitle(track.title)
+                    .setArtworkUri(Uri.parse(track.album.coverXl))
+                    .build()
+            )
+            .build()
+    }
 
     LaunchedEffect(mediaController) {
         mediaController?.addListener(object : Player.Listener {
@@ -69,6 +80,11 @@ fun TrackList(
                 isPlayingState = isPlaying
             }
         })
+
+        mediaController.apply {
+            mediaController?.setMediaItems(mediaItems)
+            mediaController?.prepare()
+        }
     }
 
     val scrollState = rememberLazyListState()
@@ -131,20 +147,11 @@ fun TrackList(
                                         controller.play()
                                     }
                                 } else {
-                                    val mediaItem = MediaItem.Builder()
-                                        .setMediaId(track.id.toString())
-                                        .setUri(Uri.parse(track.preview))
-                                        .setMediaMetadata(
-                                            MediaMetadata.Builder()
-                                                .setArtist(track.artist.name)
-                                                .setTitle(track.title)
-                                                .setArtworkUri(Uri.parse(track.album.coverXl))
-                                                .build()
-                                        )
-                                        .build()
 
-                                    controller.setMediaItem(mediaItem)
-                                    controller.prepare()
+                                    controller.seekTo(
+                                        mediaItems.indexOf(mediaItems.first { it.mediaId == track.id.toString() }),
+                                        0
+                                    )
                                     controller.play()
                                 }
                             }
