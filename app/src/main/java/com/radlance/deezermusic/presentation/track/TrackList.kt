@@ -14,12 +14,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlendMode
@@ -33,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
@@ -47,14 +49,16 @@ import com.radlance.deezermusic.presentation.ui.theme.DeezerMusicTheme
 fun TrackList(
     trackList: List<Track>,
     label: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    trackViewModel: TrackViewModel = viewModel()
 ) {
+    val trackState by trackViewModel.trackState.collectAsState()
+
+    val previousMediaItems = remember { mutableStateOf(emptyList<MediaItem>()) }
     val context = LocalContext.current
     val sessionToken = SessionToken(context, ComponentName(context, PlaybackService::class.java))
     val mediaController = rememberMediaController(context, sessionToken)
-    var isPlayingState by remember { mutableStateOf(false) }
-
-    var currentMediaItemState by remember { mutableStateOf<MediaItem?>(null) }
+    val currentTracks = rememberSaveable { mutableStateOf(emptyList<Track>()) }
 
     val mediaItems = trackList.map { track ->
         MediaItem.Builder()
@@ -70,20 +74,26 @@ fun TrackList(
             .build()
     }
 
-    LaunchedEffect(mediaController) {
-        mediaController?.addListener(object : Player.Listener {
+
+    DisposableEffect(mediaController) {
+        val listener = object : Player.Listener {
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-                currentMediaItemState = mediaItem
+                trackViewModel.setMediaItem(mediaItem)
             }
 
             override fun onIsPlayingChanged(isPlaying: Boolean) {
-                isPlayingState = isPlaying
+                trackViewModel.changePlayingState(isPlaying)
             }
-        })
+        }
 
-        mediaController.apply {
+        mediaController?.addListener(listener)
+
+        if (mediaController?.currentMediaItem == null) {
             mediaController?.setMediaItems(mediaItems)
-            mediaController?.prepare()
+        }
+
+        onDispose {
+            mediaController?.removeListener(listener)
         }
     }
 
@@ -134,29 +144,33 @@ fun TrackList(
                 contentPadding = PaddingValues(12.dp)
             ) {
                 items(items = trackList, key = { track -> track.id }) { track ->
-                    TrackCard(
-                        track = track,
-                        isFocused = currentMediaItemState?.mediaId == track.id.toString(),
-                        isPlaying = isPlayingState,
-                        modifier = Modifier.clickable {
-                            mediaController?.let { controller ->
-                                if (currentMediaItemState?.mediaId == track.id.toString()) {
-                                    if (isPlayingState) {
-                                        controller.pause()
+                    with(trackState) {
+                        TrackCard(
+                            track = track,
+                            isFocused = currentMediaItem?.mediaId == track.id.toString() && isSelectedTrack,
+                            isPlaying = isPlaying,
+                            modifier = Modifier.clickable {
+                                mediaController?.let { controller ->
+                                    if (currentMediaItem?.mediaId == track.id.toString() && isSelectedTrack) {
+                                        if (isPlaying) {
+                                            controller.pause()
+                                        } else {
+                                            controller.play()
+                                        }
                                     } else {
+                                        mediaController.setMediaItems(mediaItems)
+                                        controller.seekTo(
+                                            mediaItems.indexOf(mediaItems.first { it.mediaId == track.id.toString() }),
+                                            0
+                                        )
                                         controller.play()
+                                        trackViewModel.selectTrack()
                                     }
-                                } else {
-
-                                    controller.seekTo(
-                                        mediaItems.indexOf(mediaItems.first { it.mediaId == track.id.toString() }),
-                                        0
-                                    )
-                                    controller.play()
                                 }
                             }
-                        }
-                    )
+                        )
+
+                    }
                 }
             }
         } else {
