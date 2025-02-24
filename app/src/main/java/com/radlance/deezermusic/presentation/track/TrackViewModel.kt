@@ -23,10 +23,4 @@ class TrackViewModel : ViewModel() {
             currentState.copy(currentMediaItem = mediaItem)
         }
     }
-
-    fun selectTrack() {
-        _trackState.update { currentState ->
-            currentState.copy(isSelectedTrack = true)
-        }
-    }
 }

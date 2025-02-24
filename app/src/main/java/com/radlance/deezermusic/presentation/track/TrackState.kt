@@ -4,6 +4,5 @@ import androidx.media3.common.MediaItem
 
 data class TrackState(
     val currentMediaItem: MediaItem? = null,
-    val isPlaying: Boolean = false,
-    val isSelectedTrack: Boolean = false
+    val isPlaying: Boolean = false
 )
