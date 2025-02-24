@@ -18,9 +18,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlendMode
@@ -54,11 +52,9 @@ fun TrackList(
 ) {
     val trackState by trackViewModel.trackState.collectAsState()
 
-    val previousMediaItems = remember { mutableStateOf(emptyList<MediaItem>()) }
     val context = LocalContext.current
     val sessionToken = SessionToken(context, ComponentName(context, PlaybackService::class.java))
     val mediaController = rememberMediaController(context, sessionToken)
-    val currentTracks = rememberSaveable { mutableStateOf(emptyList<Track>()) }
 
     val mediaItems = trackList.map { track ->
         MediaItem.Builder()
@@ -87,10 +83,6 @@ fun TrackList(
         }
 
         mediaController?.addListener(listener)
-
-        if (mediaController?.currentMediaItem == null) {
-            mediaController?.setMediaItems(mediaItems)
-        }
 
         onDispose {
             mediaController?.removeListener(listener)
@@ -147,11 +139,11 @@ fun TrackList(
                     with(trackState) {
                         TrackCard(
                             track = track,
-                            isFocused = currentMediaItem?.mediaId == track.id.toString() && isSelectedTrack,
+                            isFocused = currentMediaItem?.mediaId == track.id.toString(),
                             isPlaying = isPlaying,
                             modifier = Modifier.clickable {
                                 mediaController?.let { controller ->
-                                    if (currentMediaItem?.mediaId == track.id.toString() && isSelectedTrack) {
+                                    if (currentMediaItem?.mediaId == track.id.toString()) {
                                         if (isPlaying) {
                                             controller.pause()
                                         } else {
@@ -164,7 +156,6 @@ fun TrackList(
                                             0
                                         )
                                         controller.play()
-                                        trackViewModel.selectTrack()
                                     }
                                 }
                             }
