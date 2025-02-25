@@ -3,7 +3,6 @@ package com.radlance.deezermusic.presentation.track
 import android.content.ComponentName
 import android.net.Uri
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -148,7 +147,7 @@ fun TrackList(
                             track = track,
                             isFocused = currentMediaItem?.mediaId == track.id.toString(),
                             isPlaying = isPlaying,
-                            modifier = Modifier.clickable {
+                            onPlayClick = {
                                 mediaController?.let { controller ->
                                     if (currentMediaItem?.mediaId == track.id.toString()) {
                                         if (isPlaying) {
@@ -166,39 +165,34 @@ fun TrackList(
 
                                     }
                                 }
-                            }
-                        )
+                            },
+                            onPreviousClick = {
+                                mediaController?.seekToPrevious()
+                                mediaController?.play()
+                            },
 
+                            onNextClick = {
+                                mediaController?.seekToNext()
+                                mediaController?.play()
+                            },
+                            isMiniPlayer = false
+                        )
                     }
                 }
             }
 
-            loadTrackDetailsUiState.Show(trackState.isPlaying)
-
-//            trackState.currentTrack?.let { track ->
-//                Box(
-//                    contentAlignment = Alignment.CenterStart,
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .height(76.dp)
-//                        .padding(horizontal = 12.dp)
-//                ) {
-//                    with(trackState) {
-//                        TrackCard(
-//                            track = track,
-//                            isFocused = true,
-//                            isPlaying = isPlaying,
-//                            modifier = Modifier.clickable {
-//                                if (isPlaying) {
-//                                    mediaController?.pause()
-//                                } else {
-//                                    mediaController?.play()
-//                                }
-//                            }
-//                        )
-//                    }
-//                }
-//            }
+            loadTrackDetailsUiState.Show(
+                isPlayed = trackState.isPlaying,
+                onPlayClick = {
+                    if (trackState.isPlaying) {
+                        mediaController?.pause()
+                    } else {
+                        mediaController?.play()
+                    }
+                },
+                onPreviousClick = { mediaController?.seekToPrevious() },
+                onNextClick = { mediaController?.seekToNext() }
+            )
         } else {
             Text(text = stringResource(R.string.nothing_found))
         }

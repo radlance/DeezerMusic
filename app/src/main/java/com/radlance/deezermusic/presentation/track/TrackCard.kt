@@ -4,6 +4,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,7 +19,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.SkipNext
+import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -43,9 +48,24 @@ fun TrackCard(
     track: Track,
     isFocused: Boolean,
     isPlaying: Boolean,
+    isMiniPlayer: Boolean,
+    onPlayClick: () -> Unit,
+    onPreviousClick: () -> Unit,
+    onNextClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .then(
+                if (!isMiniPlayer) {
+                    Modifier.clickable { onPlayClick() }
+                } else {
+                    Modifier
+                }
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Box(modifier = Modifier.size(52.dp), contentAlignment = Alignment.Center) {
             SubcomposeAsyncImage(
                 model = track.album.cover,
@@ -71,30 +91,32 @@ fun TrackCard(
                     .clip(RoundedCornerShape(6.dp))
             )
 
-            androidx.compose.animation.AnimatedVisibility(
-                visible = isFocused,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
-                if (isFocused) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(RoundedCornerShape(6.dp))
-                            .background(Color.Black.copy(alpha = 0.3f))
-                    ) {
-                        val icon = if (isPlaying) {
-                            Icons.Default.Pause
-                        } else {
-                            Icons.Default.PlayArrow
-                        }
+            if (!isMiniPlayer) {
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = isFocused,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    if (isFocused) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(Color.Black.copy(alpha = 0.3f))
+                        ) {
+                            val icon = if (isPlaying) {
+                                Icons.Default.Pause
+                            } else {
+                                Icons.Default.PlayArrow
+                            }
 
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = stringResource(R.string.play_pause_track),
-                            tint = Color.White
-                        )
+                            Icon(
+                                imageVector = icon,
+                                contentDescription = stringResource(R.string.play_pause_track),
+                                tint = Color.White
+                            )
+                        }
                     }
                 }
             }
@@ -102,7 +124,7 @@ fun TrackCard(
         }
 
         Spacer(Modifier.width(12.dp))
-        Column {
+        Column(Modifier.weight(3f)) {
             Text(
                 text = track.title,
                 fontSize = 14.sp,
@@ -119,6 +141,37 @@ fun TrackCard(
                     .alpha(0.5f)
                     .basicMarquee()
             )
+        }
+
+        if (isMiniPlayer) {
+            Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.weight(3f)) {
+                IconButton(onPreviousClick) {
+                    Icon(
+                        imageVector = Icons.Filled.SkipPrevious,
+                        contentDescription = "SkipPrevious"
+                    )
+                }
+
+                val middleIcon = if (isPlaying) {
+                    Icons.Filled.Pause
+                } else {
+                    Icons.Filled.PlayArrow
+                }
+
+                IconButton(onPlayClick) {
+                    Icon(
+                        imageVector = middleIcon,
+                        contentDescription = stringResource(R.string.play_pause_track)
+                    )
+                }
+
+                IconButton(onNextClick) {
+                    Icon(
+                        imageVector = Icons.Filled.SkipNext,
+                        contentDescription = "SkipNext"
+                    )
+                }
+            }
         }
     }
 }
@@ -172,7 +225,11 @@ private fun TrackCardPreview() {
                 type = "track"
             ),
             isFocused = false,
-            isPlaying = true
+            isPlaying = true,
+            isMiniPlayer = true,
+            onNextClick = {},
+            onPreviousClick = {},
+            onPlayClick = {}
         )
     }
 }
