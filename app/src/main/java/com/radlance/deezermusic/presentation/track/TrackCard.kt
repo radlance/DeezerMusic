@@ -3,6 +3,7 @@ package com.radlance.deezermusic.presentation.track
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -106,9 +107,18 @@ fun TrackCard(
                 text = track.title,
                 fontSize = 14.sp,
                 overflow = TextOverflow.Ellipsis,
-                maxLines = 1
+                maxLines = 1,
+                modifier = Modifier.basicMarquee()
             )
-            Text(text = track.artist.name, fontSize = 12.sp, modifier = Modifier.alpha(0.5f))
+            Text(
+                text = track.artist.name,
+                fontSize = 12.sp,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
+                modifier = Modifier
+                    .alpha(0.5f)
+                    .basicMarquee()
+            )
         }
     }
 }
