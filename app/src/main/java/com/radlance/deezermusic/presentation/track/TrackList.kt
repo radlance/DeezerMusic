@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -32,7 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
@@ -48,13 +49,14 @@ fun TrackList(
     trackList: List<Track>,
     label: String,
     modifier: Modifier = Modifier,
-    trackViewModel: TrackViewModel = viewModel()
+    trackViewModel: TrackViewModel = hiltViewModel()
 ) {
     val trackState by trackViewModel.trackState.collectAsState()
 
     val context = LocalContext.current
     val sessionToken = SessionToken(context, ComponentName(context, PlaybackService::class.java))
     val mediaController = rememberMediaController(context, sessionToken)
+    val loadTrackDetailsUiState by trackViewModel.loadTrackDetailsUiState.collectAsState()
 
     val mediaItems = trackList.map { track ->
         MediaItem.Builder()
@@ -89,6 +91,10 @@ fun TrackList(
         }
     }
 
+    LaunchedEffect(trackState.currentMediaItem) {
+        trackState.currentMediaItem?.mediaId?.let { trackViewModel.loadTrackDetailsById(it) }
+    }
+
     val scrollState = rememberLazyListState()
     val firstVisibleItemIndex by remember {
         derivedStateOf { scrollState.firstVisibleItemIndex }
@@ -107,7 +113,7 @@ fun TrackList(
     )
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center
     ) {
         if (trackList.isNotEmpty()) {
@@ -119,7 +125,8 @@ fun TrackList(
             )
             LazyColumn(
                 state = scrollState,
-                modifier = modifier
+                modifier = Modifier
+                    .weight(1f)
                     .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
                     .drawWithContent {
                         drawContent()
@@ -156,6 +163,7 @@ fun TrackList(
                                             0
                                         )
                                         controller.play()
+
                                     }
                                 }
                             }
@@ -164,6 +172,33 @@ fun TrackList(
                     }
                 }
             }
+
+            loadTrackDetailsUiState.Show(trackState.isPlaying)
+
+//            trackState.currentTrack?.let { track ->
+//                Box(
+//                    contentAlignment = Alignment.CenterStart,
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .height(76.dp)
+//                        .padding(horizontal = 12.dp)
+//                ) {
+//                    with(trackState) {
+//                        TrackCard(
+//                            track = track,
+//                            isFocused = true,
+//                            isPlaying = isPlaying,
+//                            modifier = Modifier.clickable {
+//                                if (isPlaying) {
+//                                    mediaController?.pause()
+//                                } else {
+//                                    mediaController?.play()
+//                                }
+//                            }
+//                        )
+//                    }
+//                }
+//            }
         } else {
             Text(text = stringResource(R.string.nothing_found))
         }

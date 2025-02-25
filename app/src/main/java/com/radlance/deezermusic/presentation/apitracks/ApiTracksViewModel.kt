@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ApiTracksViewModel @Inject constructor(
     private val apiTracksRepository: ApiTracksRepository,
-    private val mapper: ApiTracksResult.Mapper<ApiTracksResultUiState>,
+    private val mapper: ApiTracksResult.Mapper<ApiTracksResultUiState>
 ) : ViewModel() {
     private val _loadTracksResultUiState =
         MutableStateFlow<ApiTracksResultUiState>(ApiTracksResultUiState.Initial)

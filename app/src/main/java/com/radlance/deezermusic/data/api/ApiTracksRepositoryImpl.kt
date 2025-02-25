@@ -32,4 +32,15 @@ class ApiTracksRepositoryImpl @Inject constructor(
             ApiTracksResult.Error(e.message ?: resourceProvider.getString(R.string.unknown_error))
         }
     }
+
+    override suspend fun loadTrackDetailsById(trackId: String): ApiTracksResult {
+        return try {
+            val foundedTrack = service.loadTrackDetailsById(trackId)
+            ApiTracksResult.Success(listOf(foundedTrack.toTrack()))
+        } catch (e: UnknownHostException) {
+            ApiTracksResult.Error(resourceProvider.getString(R.string.no_connection))
+        } catch (e: Exception) {
+            ApiTracksResult.Error(e.message ?: resourceProvider.getString(R.string.unknown_error))
+        }
+    }
 }
