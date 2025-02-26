@@ -1,6 +1,5 @@
 package com.radlance.deezermusic.presentation.track
 
-import android.content.ComponentName
 import android.net.Uri
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -26,7 +25,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,7 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
-import androidx.media3.session.SessionToken
+import androidx.media3.session.MediaController
 import com.radlance.deezermusic.R
 import com.radlance.deezermusic.domain.track.Album
 import com.radlance.deezermusic.domain.track.Artist
@@ -47,15 +45,11 @@ import com.radlance.deezermusic.presentation.ui.theme.DeezerMusicTheme
 fun TrackList(
     trackList: List<Track>,
     label: String,
+    mediaController: MediaController?,
     modifier: Modifier = Modifier,
     trackViewModel: TrackViewModel = hiltViewModel()
 ) {
     val trackState by trackViewModel.trackState.collectAsState()
-
-    val context = LocalContext.current
-    val sessionToken = SessionToken(context, ComponentName(context, PlaybackService::class.java))
-    val mediaController = rememberMediaController(context, sessionToken)
-    val loadTrackDetailsUiState by trackViewModel.loadTrackDetailsUiState.collectAsState()
 
     val mediaItems = trackList.map { track ->
         MediaItem.Builder()
@@ -180,19 +174,6 @@ fun TrackList(
                     }
                 }
             }
-
-            loadTrackDetailsUiState.Show(
-                isPlayed = trackState.isPlaying,
-                onPlayClick = {
-                    if (trackState.isPlaying) {
-                        mediaController?.pause()
-                    } else {
-                        mediaController?.play()
-                    }
-                },
-                onPreviousClick = { mediaController?.seekToPrevious() },
-                onNextClick = { mediaController?.seekToNext() }
-            )
         } else {
             Text(text = stringResource(R.string.nothing_found))
         }
@@ -249,7 +230,8 @@ private fun TrackListPreview() {
                     type = "track"
                 )
             },
-            label = stringResource(R.string.charts)
+            label = stringResource(R.string.charts),
+            mediaController = null
         )
     }
 }

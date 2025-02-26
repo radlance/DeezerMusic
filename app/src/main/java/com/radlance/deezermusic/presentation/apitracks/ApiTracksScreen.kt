@@ -34,17 +34,21 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.media3.session.MediaController
 import com.radlance.deezermusic.R
+import com.radlance.deezermusic.presentation.track.TrackViewModel
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ApiTracksScreen(
+    mediaController: MediaController?,
     modifier: Modifier = Modifier,
-    viewModel: ApiTracksViewModel = hiltViewModel()
+    apiTracksViewModel: ApiTracksViewModel = hiltViewModel(),
+    trackViewModel: TrackViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val loadChartResultUiState by viewModel.loadTracksResultUiState.collectAsState()
+    val loadChartResultUiState by apiTracksViewModel.loadTracksResultUiState.collectAsState()
     var searchQuery by rememberSaveable { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -58,10 +62,10 @@ fun ApiTracksScreen(
             debouncedQuery = searchQuery
             if (searchQuery.isBlank()) {
                 label = context.getString(R.string.charts)
-                viewModel.loadChart()
+                apiTracksViewModel.loadChart()
             } else {
                 label = context.getString(R.string.search_results)
-                viewModel.searchTracksByQuery(query = searchQuery.trim())
+                apiTracksViewModel.searchTracksByQuery(query = searchQuery.trim())
             }
         }
     }
@@ -123,11 +127,13 @@ fun ApiTracksScreen(
                 label = label,
                 onRetryClick = {
                     if (searchQuery.isBlank()) {
-                        viewModel.loadChart()
+                        apiTracksViewModel.loadChart()
                     } else {
-                        viewModel.searchTracksByQuery(query = searchQuery.trim())
+                        apiTracksViewModel.searchTracksByQuery(query = searchQuery.trim())
                     }
-                }
+                },
+                mediaController = mediaController,
+                trackViewModel = trackViewModel
             )
         }
     }
